@@ -13,7 +13,7 @@ public class MovementCharacters : MonoBehaviour
     [SerializeField] float speedDash;
     [SerializeField] float delayBtwDash;
 
-    bool isCanDash;
+    bool allowDash; //флаг, доступен ли даш 
     int dashForward; //если 1 то вправо, -1 влево
     float dashedDist; //какая дистанция уже пройдена дашем
 
@@ -21,7 +21,7 @@ public class MovementCharacters : MonoBehaviour
     void Start()
     {
         charController = GetComponent<CharacterController>();
-        isCanDash = true;
+        allowDash = true;
         dashForward = 0;
         dashedDist = 0;
     }
@@ -29,7 +29,7 @@ public class MovementCharacters : MonoBehaviour
     // Update is called once per frame
     void Update()
     {        
-        if (isCanDash)
+        if (allowDash)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -83,10 +83,10 @@ public class MovementCharacters : MonoBehaviour
 
     IEnumerator CoroutineDash()
     {
-        Debug.Log("dash off");
-        isCanDash = false;
+        Debug.Log("dash off last for " + delayBtwDash);
+        allowDash = false;
         yield return new WaitForSeconds(delayBtwDash);
-        isCanDash = true;
+        allowDash = true;
         Debug.Log("dash on");
     }
 }

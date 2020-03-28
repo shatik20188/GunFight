@@ -2413,7 +2413,8 @@ GameObject:
   - component: {fileID: 1229263234}
   - component: {fileID: 3420607303889688660}
   - component: {fileID: 4040054995834962998}
-  m_Layer: 0
+  - component: {fileID: 4867151312466785566}
+  m_Layer: 9
   m_Name: Character_Badguy_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2461,7 +2462,6 @@ MonoBehaviour:
   lengthDash: 2
   speedDash: 12
   delayBtwDash: 3
-  poolManager: {fileID: 0}
 --- !u!143 &3420607303889688660
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2474,7 +2474,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 2
-  m_Radius: 0.25
+  m_Radius: 0.1
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -2492,6 +2492,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15fa0fb7e727c58469dabe14c60bb139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedBullet: 10
+  cdBetweenShots: 1
+  cdBetweenReload: 5
+  countBulletsInMagaz: 5
+--- !u!65 &4867151312466785566
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942289980213182}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.6, y: 1, z: 0.25}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &1954743680365594
 GameObject:
   m_ObjectHideFlags: 0
