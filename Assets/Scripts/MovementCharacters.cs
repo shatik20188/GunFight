@@ -2,20 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Photon.Pun;
+
 public class MovementCharacters : MonoBehaviour
 {
     CharacterController charController;
 
     [SerializeField] float moveSpeed;
     [SerializeField] float gravity;
-    [SerializeField] float moveBound;
+    [SerializeField] private float moveBound;
+    public float _moveBound { get { return moveBound; } }
     [SerializeField] float lengthDash;
     [SerializeField] float speedDash;
     [SerializeField] float delayBtwDash;
 
+    GameObject Camera;
     bool allowDash; //флаг, доступен ли даш 
     int dashForward; //если 1 то вправо, -1 влево
     float dashedDist; //какая дистанция уже пройдена дашем
+    bool inverse = false;
+
+    private PhotonView photonView;
 
     // Start is called before the first frame update
     void Start()
@@ -24,47 +31,53 @@ public class MovementCharacters : MonoBehaviour
         allowDash = true;
         dashForward = 0;
         dashedDist = 0;
+        if (transform.rotation.eulerAngles.y == 180) inverse = true;
+        photonView = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
-    {        
-        if (allowDash)
+    {   
+        if (photonView.IsMine)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (allowDash)
             {
-                dashForward = -1;
-                StartCoroutine(CoroutineDash());
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    dashForward = -1;
+                    StartCoroutine(CoroutineDash());
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    dashForward = 1;
+                    StartCoroutine(CoroutineDash());
+                }
             }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                dashForward = 1;
-                StartCoroutine(CoroutineDash());
-            }
-        }
 
-        if (dashForward == 0)
-        {
-            MovePers(Input.GetAxis("Horizontal") * moveSpeed);
-        }
-        else
-        {
-            if (dashedDist < lengthDash)
+            if (dashForward == 0)
             {
-                MovePers(speedDash * dashForward);
-                dashedDist += (speedDash * Time.deltaTime);
+                MovePers(Input.GetAxis("Horizontal") * moveSpeed);
             }
             else
             {
-                dashedDist = 0;
-                dashForward = 0;
+                if (dashedDist < lengthDash)
+                {
+                    MovePers(speedDash * dashForward);
+                    dashedDist += (speedDash * Time.deltaTime);
+                }
+                else
+                {
+                    dashedDist = 0;
+                    dashForward = 0;
+                }
             }
-        }
 
+        }
     }
 
     void MovePers(float deltaX)
     {
+        if (inverse) deltaX = -deltaX;
         Vector3 movement = new Vector3(deltaX, gravity, 0);
         movement *= Time.deltaTime;
 

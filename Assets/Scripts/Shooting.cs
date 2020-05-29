@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Photon.Pun;
+
 public class Shooting : MonoBehaviour
 {
     [SerializeField] float speedBullet;
@@ -10,6 +12,7 @@ public class Shooting : MonoBehaviour
     [SerializeField] int countBulletsInMagaz;
 
     PoolManager poolManager;
+    PhotonView photonView;
 
     bool allowShoot; //флаг, доступен ли выстрел 
     int bulletsInMagazine;
@@ -21,6 +24,7 @@ public class Shooting : MonoBehaviour
         allowShoot = true;
         poolManager = PoolManager.instance;
         bulletsInMagazine = countBulletsInMagaz;
+        photonView = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
@@ -31,29 +35,38 @@ public class Shooting : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine)
         {
-            if (allowShoot)
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                if (--bulletsInMagazine > 0)
-                {                    
-                    StartCoroutine(CoroutineShotCd());
-                }
-                else
+                if (allowShoot)
                 {
-                    StartCoroutine(CoroutineReloadCd());
-                }
-                Debug.Log("inMagazine: " + bulletsInMagazine);
+                    if (--bulletsInMagazine > 0)
+                    {                    
+                        StartCoroutine(CoroutineShotCd());
+                    }
+                    else
+                    {
+                        StartCoroutine(CoroutineReloadCd());
+                    }
+                    Debug.Log("inMagazine: " + bulletsInMagazine);
 
-                Vector3 spawnBulletPos = transform.TransformPoint(new Vector3(0, 1, 0.5f));
-                Quaternion spawnBulletRot = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(90, 0, 0)); 
-                        //"new Vector3(90, 0, 0)" справедливо для тестового префаба пули, возможно для нормального варианта не потребуется
-                GameObject Bullet = poolManager.GetObject(BULLETS_POOL_NAME, spawnBulletPos, spawnBulletRot);
+                    photonView.RPC("RpcShoot", RpcTarget.All);
                 
-                Bullet.GetComponent<MovementBullet>().StartBullet(speedBullet);        
-                
+                }
             }
         }
+    }
+
+    [PunRPC]
+    public void RpcShoot()
+    {
+        Vector3 spawnBulletPos = transform.TransformPoint(new Vector3(0, 1, 0.5f));
+        Quaternion spawnBulletRot = Quaternion.Euler(transform.rotation.eulerAngles + new Vector3(90, 0, 0));
+        //"new Vector3(90, 0, 0)" справедливо для тестового префаба пули, возможно для нормального варианта не потребуется
+        GameObject Bullet = poolManager.GetObject(BULLETS_POOL_NAME, spawnBulletPos, spawnBulletRot);
+        Debug.Log("spawn bullet from " + photonView.ViewID);
+        Bullet.GetComponent<MovementBullet>().StartBullet(speedBullet);
     }
 
     IEnumerator CoroutineShotCd()
