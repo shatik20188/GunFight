@@ -15,12 +15,16 @@ public class MovementCharacters : MonoBehaviour
     [SerializeField] float lengthDash;
     [SerializeField] float speedDash;
     [SerializeField] float delayBtwDash;
+    [SerializeField] bool isOnline = true;
 
     GameObject Camera;
     bool allowDash; //флаг, доступен ли даш 
     int dashForward; //если 1 то вправо, -1 влево
     float dashedDist; //какая дистанция уже пройдена дашем
-    bool inverse = false;
+    private bool _inverse = false;
+    public bool inverse { get { return _inverse; } }
+    private float movementX;
+    public float _movementX { get { return movementX; } } //движение в данный момент (нужно для playerDie)
 
     private PhotonView photonView;
 
@@ -31,14 +35,14 @@ public class MovementCharacters : MonoBehaviour
         allowDash = true;
         dashForward = 0;
         dashedDist = 0;
-        if (transform.rotation.eulerAngles.y == 180) inverse = true;
+        if (transform.rotation.eulerAngles.y == 180) _inverse = true;
         photonView = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {   
-        if (photonView.IsMine)
+        if (photonView.IsMine || !isOnline)
         {
             if (allowDash)
             {
@@ -77,7 +81,7 @@ public class MovementCharacters : MonoBehaviour
 
     void MovePers(float deltaX)
     {
-        if (inverse) deltaX = -deltaX;
+        if (_inverse) deltaX = -deltaX;
         Vector3 movement = new Vector3(deltaX, gravity, 0);
         movement *= Time.deltaTime;
 
@@ -91,7 +95,9 @@ public class MovementCharacters : MonoBehaviour
             movement.x -= (newPosition + moveBound);
         }
 
+        movementX = movement.x;
         charController.Move(movement);
+
     }
 
     IEnumerator CoroutineDash()

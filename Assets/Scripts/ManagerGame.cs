@@ -13,30 +13,38 @@ public class ManagerGame : MonoBehaviourPunCallbacks
 
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] float cameraMoveBound = 2;
+    [SerializeField] bool isOnline = true;
+    [SerializeField] GameObject offlineCharacter;
 
     float playerMoveBound;
-    
 
     private void Start()
     {
         _camera = GameObject.Find("Main camera");
 
-        Vector3 spawnPos;
-        Quaternion spawnRot;
-        if (PhotonNetwork.IsMasterClient)
+        if (isOnline)
         {
-            spawnPos = new Vector3(0f, 1f, -7f);
-            spawnRot = Quaternion.Euler(0, 0, 0);
-            //Camera.transform.rotation = Quaternion.Euler(90, 0, 0);
+            Vector3 spawnPos;
+            Quaternion spawnRot;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                spawnPos = new Vector3(0f, 1f, -7f);
+                spawnRot = Quaternion.Euler(0, 0, 0);
+                //Camera.transform.rotation = Quaternion.Euler(90, 0, 0);
+            }
+            else
+            {
+                spawnPos = new Vector3(0f, 1f, 7f);
+                spawnRot = Quaternion.Euler(0, 180, 0);
+                _camera.transform.rotation = Quaternion.Euler(90, 180, 0);
+            }
+            player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, spawnRot, 0);
+
         }
         else
         {
-            spawnPos = new Vector3(0f, 1f, 7f);
-            spawnRot = Quaternion.Euler(0, 180, 0);
-            _camera.transform.rotation = Quaternion.Euler(90, 180, 0);
+            player = offlineCharacter;
         }
-        player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPos, spawnRot, 0);
-
         playerMoveBound = player.GetComponent<MovementCharacters>()._moveBound;
     }
 
