@@ -3276,10 +3276,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15fa0fb7e727c58469dabe14c60bb139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedBullet: 17
-  cdBetweenShots: 0.8
-  cdBetweenReload: 5
-  countBulletsInMagaz: 5
+  speedBullet: 25
+  cdBetweenShots: 0.5
+  cdBetweenReload: 3
+  countBulletsInMagaz: 6
   isOnline: 1
   isAutoShoot: 0
 --- !u!65 &4867151312466785566

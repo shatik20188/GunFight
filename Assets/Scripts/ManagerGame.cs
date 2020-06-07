@@ -52,7 +52,7 @@ public class ManagerGame : MonoBehaviourPunCallbacks
     {
         Vector3 oldPosCam = _camera.transform.position;
         float newX = player.transform.position.x / playerMoveBound * cameraMoveBound;
-        _camera.transform.position = new Vector3( newX, oldPosCam.y, oldPosCam.z );
+        _camera.transform.position = new Vector3( newX, oldPosCam.y, oldPosCam.z );       
     }
 
     public override void OnLeftRoom()
